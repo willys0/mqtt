@@ -34,6 +34,24 @@ class ByteWriter {
       buf_.push_back(static_cast<uint8_t>(u16));
    }
 
+   void putVarByteInt(uint32_t value) {
+      constexpr uint32_t kMaxSizeVariableByteInteger{0x0FFFFFFF};
+      assert(value <= kMaxSizeVariableByteInteger &&
+             "Value is larger than Variable Byte Integer limits");
+
+      constexpr uint32_t kValuesPerByte{128U};
+      constexpr uint32_t kContinuationBit{0x80};
+
+      while (value >= kValuesPerByte) {
+         uint8_t const encoded_byte{
+             static_cast<uint8_t>((value % kValuesPerByte) | kContinuationBit)};
+         buf_.push_back(encoded_byte);
+
+         value /= kValuesPerByte;
+      }
+      buf_.push_back(static_cast<uint8_t>(value));
+   }
+
    void putRawPayload(std::string_view const str) {
       buf_.insert(buf_.end(), str.begin(), str.end());
    }
@@ -44,6 +62,11 @@ class ByteWriter {
 
       putU16(static_cast<uint16_t>(str.size()));
       putRawPayload(str);
+   }
+
+   void putBytes(std::span<uint8_t const> const bytes)
+   {
+      buf_.insert(buf_.end(), bytes.begin(), bytes.end());
    }
 
    std::vector<uint8_t> const &bytes() const { return buf_; }
@@ -106,14 +129,12 @@ bool mqttConnect(ITransport &transport) {
    body.putU16(0x3C);
    body.putU16(0x00);
 
-   std::vector<uint8_t> body_bytes{body.bytes()};
+   ByteWriter packet{};
+   packet.putU8(static_cast<uint8_t>(MqttControlPackageType::kConnect));
+   packet.putVarByteInt(body.bytes().size());
+   packet.putBytes(body.bytes());
 
-   std::vector<uint8_t> bytes{};
-   bytes.push_back(static_cast<uint8_t>(MqttControlPackageType::kConnect));
-   bytes.push_back(body_bytes.size()); // TODO: This can be more then 1 byte
-   bytes.insert(bytes.end(), body_bytes.begin(), body_bytes.end());
-
-   return sendAndReceiveResponse(transport, bytes)
+   return sendAndReceiveResponse(transport, packet.bytes())
        .and_then(tryParseResponse)
        .and_then([](MqttResponse const resp) -> std::optional<bool> {
           return resp.type == MqttControlPackageType::kConnAck;
@@ -133,12 +154,12 @@ bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
    // body.putU8(0x0);
    body.putRawPayload(publish_message.message);
 
-   std::vector<uint8_t> bytes{};
-   bytes.push_back(static_cast<uint8_t>(MqttControlPackageType::kPublish));
-   bytes.push_back(body.bytes().size()); // TODO: This can be more then 1 byte
-   bytes.insert(bytes.end(), body.bytes().begin(), body.bytes().end());
+   ByteWriter packet{};
+   packet.putU8(static_cast<uint8_t>(MqttControlPackageType::kPublish));
+   packet.putVarByteInt(body.bytes().size());
+   packet.putBytes(body.bytes());
 
-   return transport.sendBytes(bytes);
+   return transport.sendBytes(packet.bytes());
 }
 
 } // namespace mqtt
