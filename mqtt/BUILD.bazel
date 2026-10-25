@@ -1,0 +1,29 @@
+
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+   name = "types",
+   srcs = ["types.cpp"],
+   hdrs = ["types.h"]
+)
+
+cc_library(
+   name = "transport",
+   srcs = ["transport.cpp"],
+   hdrs = ["transport.h"],
+   deps = [
+      "//mqtt:types"
+   ],
+   visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "mqtt",
+    srcs = ["mqtt.cpp"],
+    hdrs = ["mqtt.h"],
+    deps = [
+        "//mqtt:transport",
+        "//mqtt:types",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,11 @@
+Checks: >
+  -*,
+  cppcoreguidelines-*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length
+WarningsAsErrors: ''
+HeaderFilterRegex: '/(mqtt|client)/[^/]*\.h$'

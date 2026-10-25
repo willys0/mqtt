@@ -1,0 +1,19 @@
+# Bazel output symlinks (bazel-bin, bazel-out, bazel-testlogs, bazel-<workspace>)
+/bazel-*
+
+# External dependencies symlink created by bazel-compile-commands-extractor
+/external
+
+# Generated compilation database
+/compile_commands.json
+
+# clangd index cache
+.cache/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store

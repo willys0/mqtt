@@ -1,0 +1,9 @@
+load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
+
+# Regenerates compile_commands.json for clangd/nvim. Run whenever
+# BUILD.bazel/MODULE.bazel or deps change:
+#   bazel run //:compile_commands
+refresh_compile_commands(
+    name = "compile_commands",
+    targets = ["//..."],
+)
