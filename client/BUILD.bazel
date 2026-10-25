@@ -11,7 +11,7 @@ cc_library(
 
 cc_binary(
     name = "client",
-    srcs = ["client.cpp"],
+    srcs = ["main.cpp"],
     deps = [
         "//client:sock",
         "//mqtt:mqtt",
