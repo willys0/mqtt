@@ -24,6 +24,7 @@ cc_library(
     deps = [
         "//mqtt:transport",
         "//mqtt:types",
+        "//mqtt/codec:byte_writer"
     ],
     visibility = ["//visibility:public"],
 )

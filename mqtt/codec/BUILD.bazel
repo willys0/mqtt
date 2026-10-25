@@ -1,0 +1,8 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+   name = "byte_writer",
+   srcs = ["byte_writer.cpp"],
+   hdrs = ["byte_writer.h"],
+   visibility = ["//visibility:public"],
+)
