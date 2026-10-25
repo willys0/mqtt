@@ -127,26 +127,16 @@ bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
           "QoS > 0 is not supported yet.");
    assert(publish_message.retain == false && "Retain is not supported yet");
 
-   // Var header: Topic Name, Packet Identifier, and Properties
    ByteWriter body{};
    body.putString(publish_message.topic.value);
    // body.putU16(0x0); // TODO fix, only applicable for QoS 1 or 2
    // body.putU8(0x0);
    body.putRawPayload(publish_message.message);
 
-   // Payload
-   // The Payload contains the Application Message that is being published. The
-   // content and format of the data is application specific. The length of the
-   // Payload can be calculated by subtracting the length of the Variable Header
-   // from the Remaining Length field that is in the Fixed Header. It is valid
-   // for a PUBLISH packet to contain a zero length Payload.
-   // TODO: add here, let's just have it be 0 for now
-
    std::vector<uint8_t> bytes{};
    bytes.push_back(static_cast<uint8_t>(MqttControlPackageType::kPublish));
    bytes.push_back(body.bytes().size()); // TODO: This can be more then 1 byte
    bytes.insert(bytes.end(), body.bytes().begin(), body.bytes().end());
-   // TODO: handle QoS, Dup flag, Retain. For now just go for QoS 0 always
 
    return transport.sendBytes(bytes);
 }
