@@ -4,7 +4,8 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 cc_library(
    name = "types",
    srcs = ["types.cpp"],
-   hdrs = ["types.h"]
+   hdrs = ["types.h"],
+   visibility = ["//mqtt:__subpackages__"],
 )
 
 cc_library(
@@ -24,7 +25,8 @@ cc_library(
     deps = [
         "//mqtt:transport",
         "//mqtt:types",
-        "//mqtt/codec:byte_writer"
+        "//mqtt/codec:byte_writer",
+        "//mqtt/packet:packet"
     ],
     visibility = ["//visibility:public"],
 )

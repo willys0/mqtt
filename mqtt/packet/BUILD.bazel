@@ -1,0 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "packet",
+    srcs = ["packet.cpp"],
+    hdrs = ["packet.h"],
+    deps = [
+        "//mqtt:types",
+        "//mqtt/codec:byte_writer",
+    ],
+    visibility = ["//visibility:public"],
+)

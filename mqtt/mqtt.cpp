@@ -1,7 +1,7 @@
 #include "mqtt/mqtt.h"
+#include "mqtt/packet/packet.h"
 #include "mqtt/transport.h"
 #include "mqtt/types.h"
-#include "mqtt/codec/byte_writer.h"
 #include <cassert>
 #include <cstdint>
 #include <optional>
@@ -69,20 +69,9 @@ std::optional<MqttBytes> sendAndReceiveResponse(ITransport &transport,
 } // namespace
 
 bool mqttConnect(ITransport &transport) {
+   MqttBytes packet_bytes{packet::encodeConnect()};
 
-   codec::ByteWriter body{};
-   body.putString("MQTT");
-   body.putU8(0x04);
-   body.putU8(0x02);
-   body.putU16(0x3C);
-   body.putU16(0x00);
-
-   codec::ByteWriter packet{};
-   packet.putU8(static_cast<uint8_t>(MqttControlPackageType::kConnect));
-   packet.putVarByteInt(body.bytes().size());
-   packet.putBytes(body.bytes());
-
-   return sendAndReceiveResponse(transport, packet.bytes())
+   return sendAndReceiveResponse(transport, packet_bytes)
        .and_then(tryParseResponse)
        .and_then([](MqttResponse const resp) -> std::optional<bool> {
           return resp.type == MqttControlPackageType::kConnAck;
@@ -96,18 +85,9 @@ bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
           "QoS > 0 is not supported yet.");
    assert(publish_message.retain == false && "Retain is not supported yet");
 
-   codec::ByteWriter body{};
-   body.putString(publish_message.topic.value);
-   // body.putU16(0x0); // TODO fix, only applicable for QoS 1 or 2
-   // body.putU8(0x0);
-   body.putRawPayload(publish_message.message);
+   MqttBytes packet_bytes{packet::encodePublish(publish_message)};
 
-   codec::ByteWriter packet{};
-   packet.putU8(static_cast<uint8_t>(MqttControlPackageType::kPublish));
-   packet.putVarByteInt(body.bytes().size());
-   packet.putBytes(body.bytes());
-
-   return transport.sendBytes(packet.bytes());
+   return transport.sendBytes(packet_bytes);
 }
 
 } // namespace mqtt
