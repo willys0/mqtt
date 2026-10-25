@@ -40,13 +40,10 @@ int main(int argc, char **argv) {
 
    std::cout << "Mqtt connected!\n";
 
-   constexpr size_t kBufferSize{100U};
-   std::array<char, kBufferSize> msg_buffer{};
-   while (true) {
-      std::cin.getline(msg_buffer.data(), sizeof(msg_buffer));
-
-      auto const sent{mqtt::mqttPublish(
-          socket, createMessage({"test/topic"}, msg_buffer.data()))};
+   std::string line{};
+   while (std::getline(std::cin, line)) {
+      auto const sent{
+          mqtt::mqttPublish(socket, createMessage({"test/topic"}, line))};
 
       if (!sent) {
          perror("Mqtt publish failed");
