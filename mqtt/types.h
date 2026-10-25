@@ -9,8 +9,21 @@ namespace mqtt {
 
 using MqttBytes = std::vector<uint8_t>;
 
+enum class QoS : uint8_t {
+   kAtMostOnce = 0,
+   kAtLeastOnce = 1,
+   kExactlyOnce = 2
+};
+
 struct Topic {
    std::string_view value;
+};
+
+struct PublishMessage {
+   Topic topic;
+   std::string_view message;
+   QoS qos{QoS::kAtMostOnce};
+   bool retain{false};
 };
 
 } // namespace mqtt

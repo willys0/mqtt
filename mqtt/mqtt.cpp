@@ -121,15 +121,18 @@ bool mqttConnect(ITransport &transport) {
        .value_or(false);
 }
 
-bool mqttPublish(ITransport &transport, Topic topic,
-                 std::string_view msg) {
+bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
+
+   assert(publish_message.qos == QoS::kAtMostOnce &&
+          "QoS > 0 is not supported yet.");
+   assert(publish_message.retain == false && "Retain is not supported yet");
 
    // Var header: Topic Name, Packet Identifier, and Properties
    ByteWriter body{};
-   body.putString(topic.value);
+   body.putString(publish_message.topic.value);
    // body.putU16(0x0); // TODO fix, only applicable for QoS 1 or 2
    // body.putU8(0x0);
-   body.putRawPayload(msg);
+   body.putRawPayload(publish_message.message);
 
    // Payload
    // The Payload contains the Application Message that is being published. The

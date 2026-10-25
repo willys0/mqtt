@@ -8,11 +8,16 @@
 
 #include "client/sock.h"
 #include "mqtt/mqtt.h"
+#include "mqtt/types.h"
 
 namespace {
 
 constexpr std::string kAddress{"127.0.0.1"};
 constexpr int kPort{6666};
+
+mqtt::PublishMessage createMessage(mqtt::Topic topic, std::string_view msg) {
+   return mqtt::PublishMessage{.topic = topic, .message = msg};
+}
 
 } // namespace
 
@@ -21,8 +26,7 @@ int main(int argc, char **argv) {
    sock::SocketTransport socket{};
    bool const sock_connected{socket.connect(kAddress, kPort)};
 
-   if(!sock_connected)
-   {
+   if (!sock_connected) {
       perror("Failed to connect to sock");
       return 1;
    }
@@ -41,7 +45,8 @@ int main(int argc, char **argv) {
    while (true) {
       std::cin.getline(msg_buffer.data(), sizeof(msg_buffer));
 
-      auto const sent{mqtt::mqttPublish(socket, {"test/topic"}, msg_buffer.data())};
+      auto const sent{mqtt::mqttPublish(
+          socket, createMessage({"test/topic"}, msg_buffer.data()))};
 
       if (!sent) {
          perror("Mqtt publish failed");
@@ -51,7 +56,8 @@ int main(int argc, char **argv) {
       std::cout << "Mqtt published!\n";
    }
 
-   auto const sent{mqtt::mqttPublish(socket, {"test/topic"}, "hello")};
+   auto const sent{
+       mqtt::mqttPublish(socket, createMessage({"test/topic"}, "hello"))};
 
    if (!sent) {
       perror("Mqtt publish failed");
