@@ -37,19 +37,19 @@ class ByteWriter {
       buf_.push_back(static_cast<uint8_t>(value));
    }
 
-   void putRawPayload(std::string_view const str) {
-      buf_.insert(buf_.end(), str.begin(), str.end());
-   }
-
    void putString(std::string_view const str) {
       assert(str.size() <= std::numeric_limits<uint16_t>().max());
 
       putU16(static_cast<uint16_t>(str.size()));
-      putRawPayload(str);
+      putBytes(str);
    }
 
    void putBytes(std::span<uint8_t const> const bytes) {
       buf_.insert(buf_.end(), bytes.begin(), bytes.end());
+   }
+
+   void putBytes(std::string_view const str) {
+      buf_.insert(buf_.end(), str.begin(), str.end());
    }
 
    [[nodiscard]]

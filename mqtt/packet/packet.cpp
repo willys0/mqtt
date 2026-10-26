@@ -37,7 +37,7 @@ MqttBytes encodePublish(PublishMessage const &publish_message) {
    body.putString(publish_message.topic.value);
    // body.putU16(0x0); // TODO fix, only applicable for QoS 1 or 2
    // body.putU8(0x0);
-   body.putRawPayload(publish_message.message);
+   body.putBytes(publish_message.message);
 
    codec::ByteWriter packet{};
    packet.putU8(static_cast<uint8_t>(MqttControlPackageType::kPublish));

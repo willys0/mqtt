@@ -31,7 +31,7 @@ TEST(ByteWriterTest, WriteU16AddsTwoBytes) {
    EXPECT_EQ(writer.bytes().at(1), kValueToWrite & 0xFF);
 }
 
-TEST(ByteWriterTest, WriteBytesAddsBytes) {
+TEST(ByteWriterTest, WriteBytesVectorAddsBytes) {
    ByteWriter writer{};
 
    std::vector<uint8_t> bytes_to_write{{1, 2, 3, 4}};
@@ -39,6 +39,19 @@ TEST(ByteWriterTest, WriteBytesAddsBytes) {
 
    EXPECT_EQ(writer.bytes().size(), 4U);
    EXPECT_EQ(writer.bytes(), bytes_to_write);
+}
+
+TEST(ByteWriterTest, WriteBytesStringAddsBytes) {
+   ByteWriter writer{};
+
+   std::string_view bytes_to_write{"1234"};
+   writer.putBytes(bytes_to_write);
+
+   std::vector<uint8_t> const expected{bytes_to_write.begin(),
+                                       bytes_to_write.end()};
+
+   EXPECT_EQ(writer.bytes().size(), 4U);
+   EXPECT_EQ(writer.bytes(), expected);
 }
 
 TEST(ByteWriterTest, WriteStringAddsLengthAndBytes) {
