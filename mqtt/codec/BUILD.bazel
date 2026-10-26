@@ -6,3 +6,12 @@ cc_library(
    hdrs = ["byte_writer.h"],
    visibility = ["//visibility:public"],
 )
+
+cc_test(
+   name = "byte_writer_test",
+   srcs = ["byte_writer_test.cpp"],
+   deps = [
+      ":byte_writer",
+      "@googletest//:gtest_main",
+   ],
+)
