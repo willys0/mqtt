@@ -5,7 +5,13 @@
 
 namespace mqtt::packet {
 
-MqttBytes encodeConnect();
+struct ConnectOptions {
+   std::string_view client_id;
+   uint16_t keep_alive_seconds{0U};
+   bool clean_session{true};
+};
+
+MqttBytes encodeConnect(ConnectOptions const &connect_options);
 MqttBytes encodePublish(PublishMessage const &publish_message);
 
 } // namespace mqtt::packet

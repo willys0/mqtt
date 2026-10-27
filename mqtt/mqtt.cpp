@@ -69,7 +69,7 @@ std::optional<MqttBytes> sendAndReceiveResponse(ITransport &transport,
 } // namespace
 
 bool mqttConnect(ITransport &transport) {
-   MqttBytes packet_bytes{packet::encodeConnect()};
+   MqttBytes packet_bytes{packet::encodeConnect({.client_id = "client123"})};
 
    return sendAndReceiveResponse(transport, packet_bytes)
        .and_then(tryParseResponse)
