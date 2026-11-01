@@ -70,15 +70,18 @@ std::optional<MqttBytes> sendAndReceiveResponse(ITransport &transport,
 
 } // namespace
 
-bool Client::mqttConnect(ITransport &transport) const {
+bool Client::mqttConnect(ITransport &transport) {
    MqttBytes packet_bytes{packet::encodeConnect({.client_id = "client123"})};
 
-   return sendAndReceiveResponse(transport, packet_bytes)
-       .and_then(tryParseResponse)
-       .and_then([](MqttResponse const resp) -> std::optional<bool> {
-          return resp.type == MqttControlPackageType::kConnAck;
-       })
-       .value_or(false);
+   connected_ =
+       sendAndReceiveResponse(transport, packet_bytes)
+           .and_then(tryParseResponse)
+           .and_then([](MqttResponse const resp) -> std::optional<bool> {
+              return resp.type == MqttControlPackageType::kConnAck;
+           })
+           .value_or(false);
+
+   return connected_;
 }
 
 bool Client::mqttPublish(ITransport &transport, PublishMessage const &publish_message) const {

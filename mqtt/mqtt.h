@@ -8,11 +8,14 @@ namespace mqtt {
 
 class Client {
  public:
-   bool mqttConnect(ITransport &transport) const;
+   bool mqttConnect(ITransport &transport);
    bool mqttPublish(ITransport &transport,
                     PublishMessage const &publish_message) const;
    bool mqttSubscribe(ITransport &transport,
                       SubscribeTopics const &subscribe_topics) const;
+
+ private:
+   bool connected_{false};
 };
 
 } // namespace mqtt
