@@ -7,7 +7,9 @@
 namespace mqtt {
 
 bool mqttConnect(ITransport &transport);
-bool mqttPublish(ITransport &transport, PublishMessage const& publish_message);
+bool mqttPublish(ITransport &transport, PublishMessage const &publish_message);
+bool mqttSubscribe(ITransport &transport,
+                   SubscribeTopics const &subscribe_topics);
 
 } // namespace mqtt
 

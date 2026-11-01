@@ -40,6 +40,14 @@ int main(int argc, char **argv) {
 
    std::cout << "Mqtt connected!\n";
 
+
+   auto const subscribed{mqtt::mqttSubscribe(socket, {.topics={"foo/bar", "test/topic"}})};
+   if(!subscribed) {
+      perror("Mqtt subscription failed\n");
+      return 1;
+   }
+   std::cout << "Subscribed to topics foo/bar and test/topic\n";
+
    std::string line{};
    while (std::getline(std::cin, line)) {
       auto const sent{

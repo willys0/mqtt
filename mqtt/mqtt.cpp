@@ -19,6 +19,7 @@ enum class MqttControlPackageType : uint8_t {
    kConnAck = 2 << 4,
    kPublish = 3 << 4,
    kPubAck = 4 << 4,
+   kSubAck = 9 << 4
 };
 
 struct MqttResponse {
@@ -28,6 +29,7 @@ struct MqttResponse {
 bool isValidResponse(MqttControlPackageType const type) {
    switch (type) {
    case MqttControlPackageType::kConnAck:
+   case MqttControlPackageType::kSubAck:
       return true;
    default:
       return false;
@@ -88,6 +90,24 @@ bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
    MqttBytes packet_bytes{packet::encodePublish(publish_message)};
 
    return transport.sendBytes(packet_bytes);
+}
+
+bool mqttSubscribe(ITransport &transport,
+                   SubscribeTopics const &subscribe_topics) {
+
+   // TODO: The subscription identifier should not be static, needs to increase
+   // with each subscribe.
+   uint8_t const subscription_identifier{1U};
+
+   MqttBytes packet_bytes{
+       packet::encodeSubscribe(subscribe_topics, subscription_identifier)};
+
+   return sendAndReceiveResponse(transport, packet_bytes)
+       .and_then(tryParseResponse)
+       .and_then([](MqttResponse const resp) -> std::optional<bool> {
+          return resp.type == MqttControlPackageType::kSubAck;
+       })
+       .value_or(false);
 }
 
 } // namespace mqtt

@@ -26,6 +26,10 @@ struct PublishMessage {
    bool retain{false};
 };
 
+struct SubscribeTopics {
+   std::vector<std::string_view> topics;
+};
+
 } // namespace mqtt
 
 #endif // MQTT_TYPES_H_

@@ -13,6 +13,8 @@ struct ConnectOptions {
 
 MqttBytes encodeConnect(ConnectOptions const &connect_options);
 MqttBytes encodePublish(PublishMessage const &publish_message);
+MqttBytes encodeSubscribe(SubscribeTopics const &subscribe_topics,
+                          uint16_t const subscription_identifier);
 
 } // namespace mqtt::packet
 
