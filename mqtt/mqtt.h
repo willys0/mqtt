@@ -12,10 +12,11 @@ class Client {
    bool mqttPublish(ITransport &transport,
                     PublishMessage const &publish_message) const;
    bool mqttSubscribe(ITransport &transport,
-                      SubscribeTopics const &subscribe_topics) const;
+                      SubscribeTopics const &subscribe_topics);
 
  private:
    bool connected_{false};
+   uint16_t subscription_identifier_{1U};
 };
 
 } // namespace mqtt

@@ -96,14 +96,12 @@ bool Client::mqttPublish(ITransport &transport, PublishMessage const &publish_me
 }
 
 bool Client::mqttSubscribe(ITransport &transport,
-                           SubscribeTopics const &subscribe_topics) const {
-
-   // TODO: The subscription identifier should not be static, needs to increase
-   // with each subscribe.
-   uint8_t const subscription_identifier{1U};
-
+                           SubscribeTopics const &subscribe_topics) {
    MqttBytes packet_bytes{
-       packet::encodeSubscribe(subscribe_topics, subscription_identifier)};
+       packet::encodeSubscribe(subscribe_topics, subscription_identifier_)};
+
+   // TODO: Handle overflow here, a 0 identifier is not valid
+   subscription_identifier_ += 1U;
 
    return sendAndReceiveResponse(transport, packet_bytes)
        .and_then(tryParseResponse)
