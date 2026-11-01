@@ -31,7 +31,9 @@ int main(int argc, char **argv) {
       return 1;
    }
 
-   auto const connected{mqtt::mqttConnect(socket)};
+   mqtt::Client client{};
+
+   auto const connected{client.mqttConnect(socket)};
 
    if (!connected) {
       perror("Mqtt connection failed");
@@ -40,9 +42,9 @@ int main(int argc, char **argv) {
 
    std::cout << "Mqtt connected!\n";
 
-
-   auto const subscribed{mqtt::mqttSubscribe(socket, {.topics={"foo/bar", "test/topic"}})};
-   if(!subscribed) {
+   auto const subscribed{
+       client.mqttSubscribe(socket, {.topics = {"foo/bar", "test/topic"}})};
+   if (!subscribed) {
       perror("Mqtt subscription failed\n");
       return 1;
    }
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
    std::string line{};
    while (std::getline(std::cin, line)) {
       auto const sent{
-          mqtt::mqttPublish(socket, createMessage({"test/topic"}, line))};
+          client.mqttPublish(socket, createMessage({"test/topic"}, line))};
 
       if (!sent) {
          perror("Mqtt publish failed");
@@ -62,7 +64,7 @@ int main(int argc, char **argv) {
    }
 
    auto const sent{
-       mqtt::mqttPublish(socket, createMessage({"test/topic"}, "hello"))};
+       client.mqttPublish(socket, createMessage({"test/topic"}, "hello"))};
 
    if (!sent) {
       perror("Mqtt publish failed");

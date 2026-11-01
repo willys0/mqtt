@@ -70,7 +70,7 @@ std::optional<MqttBytes> sendAndReceiveResponse(ITransport &transport,
 
 } // namespace
 
-bool mqttConnect(ITransport &transport) {
+bool Client::mqttConnect(ITransport &transport) const {
    MqttBytes packet_bytes{packet::encodeConnect({.client_id = "client123"})};
 
    return sendAndReceiveResponse(transport, packet_bytes)
@@ -81,7 +81,7 @@ bool mqttConnect(ITransport &transport) {
        .value_or(false);
 }
 
-bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
+bool Client::mqttPublish(ITransport &transport, PublishMessage const &publish_message) const {
 
    assert(publish_message.qos == QoS::kAtMostOnce &&
           "QoS > 0 is not supported yet.");
@@ -92,8 +92,8 @@ bool mqttPublish(ITransport &transport, PublishMessage const &publish_message) {
    return transport.sendBytes(packet_bytes);
 }
 
-bool mqttSubscribe(ITransport &transport,
-                   SubscribeTopics const &subscribe_topics) {
+bool Client::mqttSubscribe(ITransport &transport,
+                           SubscribeTopics const &subscribe_topics) const {
 
    // TODO: The subscription identifier should not be static, needs to increase
    // with each subscribe.
